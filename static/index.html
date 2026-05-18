@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PiP Studio - Buscador de Leads</title>
+  <style>
+    :root {
+      --bg:           #0f1419;
+      --card:         #1a2332;
+      --border:       #2d3a4f;
+      --text:         #e8edf4;
+      --muted:        #8b9cb3;
+      --accent:       #f5b800;
+      --accent-hover: #ffd24d;
+      --success:      #3dd68c;
+      --error:        #ff6b6b;
+      --tag-bg:       #243347;
+      --tag-hover:    #2e4060;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 24px;
+      background-image:
+        radial-gradient(ellipse at 20% 0%,  rgba(245,184,0,.07),  transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(61,214,140,.05), transparent 50%);
+    }
+
+    .card {
+      width: 100%; max-width: 520px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 24px 48px rgba(0,0,0,.35);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .06em; text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(245,184,0,.12);
+      padding: 4px 10px; border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+
+    .subtitle {
+      color: var(--muted); font-size: .9rem;
+      margin-bottom: 28px; line-height: 1.5;
+    }
+
+    label {
+      display: block; font-size: .75rem; font-weight: 600;
+      color: var(--muted); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: .04em;
+    }
+
+    .field { margin-bottom: 20px; }
+
+    select {
+      width: 100%; padding: 11px 14px; font-size: .95rem;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--bg); color: var(--text);
+      outline: none; cursor: pointer; transition: border-color .15s;
+    }
+    select:focus { border-color: var(--accent); }
+
+    .city-selector {
+      border: 1px solid var(--border);
+      border-radius: 10px; background: var(--bg); overflow: hidden;
+    }
+    .city-search {
+      width: 100%; padding: 10px 14px; font-size: .9rem;
+      border: none; border-bottom: 1px solid var(--border);
+      background: var(--bg); color: var(--text); outline: none;
+    }
+    .city-search::placeholder { color: #5c6b80; }
+    .city-search:focus { border-bottom-color: var(--accent); }
+
+    .city-list {
+      max-height: 180px; overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    .city-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px; cursor: pointer; font-size: .9rem;
+      transition: background .1s; user-select: none;
+    }
+    .city-item:hover    { background: var(--tag-hover); }
+    .city-item.selected { background: var(--tag-bg); }
+    .city-item input[type="checkbox"] {
+      accent-color: var(--accent); width: 15px; height: 15px;
+      flex-shrink: 0; cursor: pointer;
+    }
+
+    .city-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-top: 10px; min-height: 0;
+    }
+    .city-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--tag-bg); border: 1px solid var(--border);
+      color: var(--text); font-size: .8rem;
+      padding: 4px 10px; border-radius: 999px;
+    }
+    .city-tag .remove {
+      cursor: pointer; color: var(--muted); font-size: .75rem;
+      padding: 0 2px; transition: color .1s;
+    }
+    .city-tag .remove:hover { color: var(--error); }
+    .city-limit { font-size: .78rem; color: var(--muted); margin-top: 6px; }
+    .city-limit.warn { color: var(--accent); }
+
+    button {
+      width: 100%; margin-top: 4px; padding: 14px;
+      font-size: 1rem; font-weight: 600;
+      border: none; border-radius: 10px;
+      background: var(--accent); color: #1a1200;
+      cursor: pointer; transition: background .15s, transform .1s;
+    }
+    button:hover:not(:disabled)  { background: var(--accent-hover); }
+    button:active:not(:disabled) { transform: scale(.98); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+
+    .progress-box { margin-top: 24px; display: none; }
+    .progress-box.visible { display: block; }
+
+    .progress-label {
+      font-size: .85rem; color: var(--muted);
+      margin-bottom: 8px; min-height: 1.2em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .progress-track {
+      width: 100%; height: 8px;
+      background: var(--border); border-radius: 4px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: var(--accent); border-radius: 4px;
+      transition: width .3s ease;
+    }
+    .progress-fill.indeterminate {
+      width: 35%;
+      animation: indeterminate 1.4s ease-in-out infinite;
+    }
+    @keyframes indeterminate {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(320%); }
+    }
+
+    .progress-pct {
+      font-size: .78rem; color: var(--muted);
+      text-align: right; margin-top: 4px;
+    }
+
+    .status {
+      margin-top: 20px; padding: 16px;
+      border-radius: 10px; font-size: .9rem;
+      line-height: 1.5; display: none;
+    }
+    .status.visible { display: block; }
+    .status.error {
+      background: rgba(255,107,107,.08);
+      border: 1px solid rgba(255,107,107,.25);
+      color: var(--error);
+    }
+    .status.success {
+      background: rgba(61,214,140,.07);
+      border: 1px solid rgba(61,214,140,.2);
+    }
+
+    .download-btn {
+      display: inline-flex; align-items: center;
+      justify-content: center; gap: 8px;
+      margin-top: 14px; padding: 12px 20px;
+      background: var(--success); color: #0a1f14;
+      font-weight: 600; text-decoration: none;
+      border-radius: 10px; transition: filter .15s; width: 100%;
+    }
+    .download-btn:hover { filter: brightness(1.08); }
+
+    .stat-row { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+    .stat {
+      background: var(--tag-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 14px;
+      font-size: .85rem; flex: 1; min-width: 100px;
+    }
+    .stat-value { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+    .stat-label { color: var(--muted); font-size: .75rem; margin-top: 2px; }
+  </style>
+</head>
+<body>
+<main class="card">
+  <span class="badge">PiP Studio</span>
+  <h1>Buscador de Leads</h1>
+  <p class="subtitle">Busca negocios en Santa Fe por categoria y hasta 5 ciudades. Emails incluidos.</p>
+
+  <form id="scrape-form">
+    <div class="field">
+      <label for="category">Categoria</label>
+      <select id="category" required>
+        <option value="" disabled selected>Cargando...</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Ciudades <span style="font-weight:400;text-transform:none;">(hasta 5)</span></label>
+      <div class="city-selector">
+        <input class="city-search" id="city-search" type="text" placeholder="Buscar ciudad..." autocomplete="off" />
+        <div class="city-list" id="city-list"></div>
+      </div>
+      <div class="city-tags" id="city-tags"></div>
+      <p class="city-limit" id="city-limit"></p>
+    </div>
+
+    <button type="submit" id="submit-btn" disabled>Generar Excel</button>
+  </form>
+
+  <div class="progress-box" id="progress-box">
+    <div class="progress-label" id="progress-label">Iniciando...</div>
+    <div class="progress-track">
+      <div class="progress-fill indeterminate" id="progress-fill"></div>
+    </div>
+    <div class="progress-pct" id="progress-pct"></div>
+  </div>
+
+  <div id="status" class="status" aria-live="polite"></div>
+</main>
+
+<script>
+  var MAX_CITIES    = 5;
+  var allCities     = [];
+  var selectedCities = [];
+  var currentESS    = null;
+
+  var form         = document.getElementById("scrape-form");
+  var statusEl     = document.getElementById("status");
+  var submitBtn    = document.getElementById("submit-btn");
+  var catSelect    = document.getElementById("category");
+  var cityList     = document.getElementById("city-list");
+  var cityTags     = document.getElementById("city-tags");
+  var citySearch   = document.getElementById("city-search");
+  var cityLimit    = document.getElementById("city-limit");
+  var progressBox  = document.getElementById("progress-box");
+  var progressFill = document.getElementById("progress-fill");
+  var progressLbl  = document.getElementById("progress-label");
+  var progressPct  = document.getElementById("progress-pct");
+
+  function showStatus(type, html) {
+    statusEl.className = "status visible " + type;
+    statusEl.innerHTML = html;
+  }
+  function hideStatus() {
+    statusEl.className = "status";
+    statusEl.innerHTML = "";
+  }
+
+  function showProgress(msg, pct) {
+    progressBox.classList.add("visible");
+    progressLbl.textContent = msg;
+    if (pct === null) {
+      progressFill.classList.add("indeterminate");
+      progressFill.style.width = "";
+      progressPct.textContent  = "";
+    } else {
+      progressFill.classList.remove("indeterminate");
+      progressFill.style.width = pct + "%";
+      progressPct.textContent  = pct + "%";
+    }
+  }
+  function hideProgress() {
+    progressBox.classList.remove("visible");
+    progressFill.classList.remove("indeterminate");
+    progressFill.style.width = "0%";
+    progressPct.textContent  = "";
+    progressLbl.textContent  = "";
+  }
+
+  function loadConfig() {
+    fetch("/api/config")
+      .then(function(res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function(cfg) {
+        catSelect.innerHTML = cfg.categories
+          .map(function(c) { return "<option value='" + c.id + "'>" + c.id + ". " + c.label + "</option>"; })
+          .join("");
+        allCities = cfg.cities;
+        renderCityList(allCities);
+        submitBtn.disabled = false;
+      })
+      .catch(function() {
+        catSelect.innerHTML = "<option value=''>Error al cargar</option>";
+        showStatus("error", "No se pudo conectar. Corre <strong>python server.py</strong> y abri <strong>http://127.0.0.1:5000</strong>.");
+      });
+  }
+
+  function renderCityList(cities) {
+    cityList.innerHTML = cities.map(function(c) {
+      var sel = selectedCities.some(function(s) { return s.id === c.id; });
+      return "<label class='city-item " + (sel ? "selected" : "") + "' data-id='" + c.id + "'>" +
+        "<input type='checkbox' value='" + c.id + "' " + (sel ? "checked" : "") + " />" +
+        c.name + "</label>";
+    }).join("");
+
+    var items = cityList.querySelectorAll(".city-item");
+    items.forEach(function(item) {
+      item.addEventListener("click", function(e) {
+        if (e.target.tagName === "INPUT") return;
+        var cb = item.querySelector("input");
+        cb.checked = !cb.checked;
+        handleCityToggle(parseInt(item.dataset.id), cb.checked);
+      });
+      item.querySelector("input").addEventListener("change", function(e) {
+        handleCityToggle(parseInt(item.dataset.id), e.target.checked);
+      });
+    });
+  }
+
+  function handleCityToggle(id, checked) {
+    if (checked) {
+      if (selectedCities.length >= MAX_CITIES) {
+        var cb = cityList.querySelector("[data-id='" + id + "'] input");
+        if (cb) cb.checked = false;
+        cityLimit.textContent = "Maximo " + MAX_CITIES + " ciudades.";
+        cityLimit.className   = "city-limit warn";
+        return;
+      }
+      var city = allCities.find(function(c) { return c.id === id; });
+      if (city && !selectedCities.some(function(s) { return s.id === id; })) {
+        selectedCities.push(city);
+      }
+    } else {
+      selectedCities = selectedCities.filter(function(c) { return c.id !== id; });
+    }
+    updateCityUI();
+  }
+
+  function removeCity(id) {
+    selectedCities = selectedCities.filter(function(c) { return c.id !== id; });
+    var cb = cityList.querySelector("[data-id='" + id + "'] input");
+    if (cb) {
+      cb.checked = false;
+      cb.closest(".city-item").classList.remove("selected");
+    }
+    updateCityUI();
+  }
+
+  function updateCityUI() {
+    cityTags.innerHTML = selectedCities.map(function(c) {
+      return "<span class='city-tag'>" + c.name +
+        "<span class='remove' onclick='removeCity(" + c.id + ")'>x</span></span>";
+    }).join("");
+
+    var n = selectedCities.length;
+    if (n === 0) {
+      cityLimit.textContent = "";
+      cityLimit.className   = "city-limit";
+    } else if (n >= MAX_CITIES) {
+      cityLimit.textContent = "Limite alcanzado (" + n + "/" + MAX_CITIES + ").";
+      cityLimit.className   = "city-limit warn";
+    } else {
+      cityLimit.textContent = n + " ciudad" + (n > 1 ? "es" : "") + " seleccionada" + (n > 1 ? "s" : "") + ".";
+      cityLimit.className   = "city-limit";
+    }
+
+    var items = cityList.querySelectorAll(".city-item");
+    items.forEach(function(item) {
+      var id = parseInt(item.dataset.id);
+      item.classList.toggle("selected", selectedCities.some(function(c) { return c.id === id; }));
+    });
+  }
+
+  citySearch.addEventListener("input", function() {
+    var q = citySearch.value.toLowerCase().trim();
+    var filtered = q
+      ? allCities.filter(function(c) { return c.name.toLowerCase().indexOf(q) !== -1; })
+      : allCities;
+    renderCityList(filtered);
+  });
+
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    var category_id = parseInt(catSelect.value, 10);
+    if (!category_id)           { showStatus("error", "Selecciona una categoria."); return; }
+    if (!selectedCities.length) { showStatus("error", "Selecciona al menos una ciudad."); return; }
+
+    submitBtn.disabled = true;
+    hideStatus();
+    showProgress("Iniciando busqueda...", null);
+
+    if (currentESS) { currentESS.close(); currentESS = null; }
+
+    fetch("/api/scrape/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category_id: category_id,
+        city_ids: selectedCities.map(function(c) { return c.id; }),
+      }),
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(startData) {
+      if (startData.error) throw new Error(startData.error);
+
+      var job_id = startData.job_id;
+      currentESS = new EventSource("/api/scrape/progress/" + job_id);
+
+      currentESS.onmessage = function(e) {
+        var ev = JSON.parse(e.data);
+
+        if (ev.type === "ping") return;
+
+        if (ev.type === "progress") {
+          showProgress(ev.message, ev.pct);
+          return;
+        }
+
+        if (ev.type === "done") {
+          currentESS.close();
+          currentESS = null;
+          hideProgress();
+          submitBtn.disabled = false;
+
+          showStatus("success",
+            "<div class='stat-row'>" +
+            "<div class='stat'><div class='stat-value'>" + ev.count + "</div><div class='stat-label'>negocios encontrados</div></div>" +
+            "<div class='stat'><div class='stat-value'>" + ev.emails_found + "</div><div class='stat-label'>con email</div></div>" +
+            "</div>" +
+            "<a class='download-btn' href='" + ev.download_url + "' download='" + ev.filename + "'>Descargar " + ev.filename + "</a>"
+          );
+          return;
+        }
+
+        if (ev.type === "error") {
+          currentESS.close();
+          currentESS = null;
+          hideProgress();
+          submitBtn.disabled = false;
+          showStatus("error", ev.message || "Error inesperado.");
+        }
+      };
+
+      currentESS.onerror = function() {
+        currentESS.close();
+        currentESS = null;
+        hideProgress();
+        submitBtn.disabled = false;
+        showStatus("error", "Se perdio la conexion con el servidor.");
+      };
+    })
+    .catch(function(err) {
+      hideProgress();
+      submitBtn.disabled = false;
+      showStatus("error", err.message || "Error inesperado.");
+    });
+  });
+
+  loadConfig();
+</script>
+</body>
+</html>
