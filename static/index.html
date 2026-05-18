@@ -17,18 +17,18 @@
       --error:        #ff6b6b;
       --tag-bg:       #243347;
       --tag-hover:    #2e4060;
+      --foglia:       #e85d04;
+      --foglia-bg:    rgba(232,93,4,.1);
+      --foglia-border:rgba(232,93,4,.3);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "Segoe UI", system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--bg); color: var(--text);
       min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
+      display: flex; align-items: flex-start; justify-content: center;
       padding: 32px 24px;
       background-image:
         radial-gradient(ellipse at 20% 0%,  rgba(245,184,0,.07),  transparent 50%),
@@ -36,37 +36,59 @@
     }
 
     .card {
-      width: 100%; max-width: 520px;
+      width: 100%; max-width: 560px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
+      border-radius: 16px; padding: 32px;
       box-shadow: 0 24px 48px rgba(0,0,0,.35);
     }
 
     .badge {
-      display: inline-block;
-      font-size: 11px; font-weight: 600;
+      display: inline-block; font-size: 11px; font-weight: 600;
       letter-spacing: .06em; text-transform: uppercase;
-      color: var(--accent);
-      background: rgba(245,184,0,.12);
-      padding: 4px 10px; border-radius: 999px;
-      margin-bottom: 12px;
+      color: var(--accent); background: rgba(245,184,0,.12);
+      padding: 4px 10px; border-radius: 999px; margin-bottom: 12px;
     }
 
     h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; line-height: 1.5; }
 
-    .subtitle {
-      color: var(--muted); font-size: .9rem;
-      margin-bottom: 28px; line-height: 1.5;
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; gap: 4px;
+      background: rgba(0,0,0,.2);
+      border-radius: 10px; padding: 4px;
+      margin-bottom: 24px;
     }
+    .tab {
+      flex: 1; padding: 9px 12px; font-size: .85rem; font-weight: 600;
+      border: none; border-radius: 7px; cursor: pointer;
+      background: transparent; color: var(--muted);
+      transition: background .15s, color .15s;
+    }
+    .tab.active         { background: var(--card); color: var(--text); }
+    .tab.active.foglia  { color: var(--foglia); }
+    .tab-panel          { display: none; }
+    .tab-panel.active   { display: block; }
 
+    /* ── Foglia badge ── */
+    .foglia-badge {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--foglia-bg);
+      border: 1px solid var(--foglia-border);
+      border-radius: 10px; padding: 12px 16px;
+      margin-bottom: 20px;
+    }
+    .foglia-badge-icon { font-size: 1.4rem; }
+    .foglia-badge-text { font-size: .85rem; color: var(--muted); line-height: 1.4; }
+    .foglia-badge-text strong { color: var(--foglia); }
+
+    /* ── Form fields ── */
     label {
       display: block; font-size: .75rem; font-weight: 600;
       color: var(--muted); margin-bottom: 6px;
       text-transform: uppercase; letter-spacing: .04em;
     }
-
     .field { margin-bottom: 20px; }
 
     select {
@@ -77,6 +99,7 @@
     }
     select:focus { border-color: var(--accent); }
 
+    /* ── Ciudad multi-select ── */
     .city-selector {
       border: 1px solid var(--border);
       border-radius: 10px; background: var(--bg); overflow: hidden;
@@ -88,7 +111,6 @@
     }
     .city-search::placeholder { color: #5c6b80; }
     .city-search:focus { border-bottom-color: var(--accent); }
-
     .city-list {
       max-height: 180px; overflow-y: auto;
       scrollbar-width: thin; scrollbar-color: var(--border) transparent;
@@ -104,11 +126,7 @@
       accent-color: var(--accent); width: 15px; height: 15px;
       flex-shrink: 0; cursor: pointer;
     }
-
-    .city-tags {
-      display: flex; flex-wrap: wrap; gap: 6px;
-      margin-top: 10px; min-height: 0;
-    }
+    .city-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
     .city-tag {
       display: inline-flex; align-items: center; gap: 5px;
       background: var(--tag-bg); border: 1px solid var(--border);
@@ -116,42 +134,55 @@
       padding: 4px 10px; border-radius: 999px;
     }
     .city-tag .remove {
-      cursor: pointer; color: var(--muted); font-size: .75rem;
-      padding: 0 2px; transition: color .1s;
+      cursor: pointer; color: var(--muted); font-size: .75rem; transition: color .1s;
     }
     .city-tag .remove:hover { color: var(--error); }
     .city-limit { font-size: .78rem; color: var(--muted); margin-top: 6px; }
     .city-limit.warn { color: var(--accent); }
 
-    button {
+    /* ── Modo Foglia ciudad ── */
+    .foglia-mode-toggle {
+      display: flex; gap: 4px;
+      background: rgba(0,0,0,.15);
+      border-radius: 8px; padding: 3px; margin-bottom: 16px;
+    }
+    .foglia-mode-btn {
+      flex: 1; padding: 7px; font-size: .82rem; font-weight: 600;
+      border: none; border-radius: 6px; cursor: pointer;
+      background: transparent; color: var(--muted); transition: all .15s;
+    }
+    .foglia-mode-btn.active { background: var(--card); color: var(--foglia); }
+
+    /* ── Botones ── */
+    button.primary {
       width: 100%; margin-top: 4px; padding: 14px;
       font-size: 1rem; font-weight: 600;
       border: none; border-radius: 10px;
       background: var(--accent); color: #1a1200;
       cursor: pointer; transition: background .15s, transform .1s;
     }
-    button:hover:not(:disabled)  { background: var(--accent-hover); }
-    button:active:not(:disabled) { transform: scale(.98); }
-    button:disabled { opacity: .5; cursor: not-allowed; }
+    button.primary:hover:not(:disabled)  { background: var(--accent-hover); }
+    button.primary:active:not(:disabled) { transform: scale(.98); }
+    button.primary:disabled { opacity: .5; cursor: not-allowed; }
+    button.primary.foglia-btn { background: var(--foglia); color: #fff; }
+    button.primary.foglia-btn:hover:not(:disabled) { background: #ff6d1f; }
 
+    /* ── Progreso ── */
     .progress-box { margin-top: 24px; display: none; }
     .progress-box.visible { display: block; }
-
     .progress-label {
-      font-size: .85rem; color: var(--muted);
-      margin-bottom: 8px; min-height: 1.2em;
+      font-size: .85rem; color: var(--muted); margin-bottom: 8px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
     .progress-track {
       width: 100%; height: 8px;
       background: var(--border); border-radius: 4px; overflow: hidden;
     }
     .progress-fill {
-      height: 100%; width: 0%;
-      background: var(--accent); border-radius: 4px;
-      transition: width .3s ease;
+      height: 100%; width: 0%; background: var(--accent);
+      border-radius: 4px; transition: width .3s ease;
     }
+    .progress-fill.foglia  { background: var(--foglia); }
     .progress-fill.indeterminate {
       width: 35%;
       animation: indeterminate 1.4s ease-in-out infinite;
@@ -160,31 +191,16 @@
       0%   { transform: translateX(-100%); }
       100% { transform: translateX(320%); }
     }
+    .progress-pct { font-size: .78rem; color: var(--muted); text-align: right; margin-top: 4px; }
 
-    .progress-pct {
-      font-size: .78rem; color: var(--muted);
-      text-align: right; margin-top: 4px;
-    }
-
-    .status {
-      margin-top: 20px; padding: 16px;
-      border-radius: 10px; font-size: .9rem;
-      line-height: 1.5; display: none;
-    }
+    /* ── Status ── */
+    .status { margin-top: 20px; padding: 16px; border-radius: 10px; font-size: .9rem; line-height: 1.5; display: none; }
     .status.visible { display: block; }
-    .status.error {
-      background: rgba(255,107,107,.08);
-      border: 1px solid rgba(255,107,107,.25);
-      color: var(--error);
-    }
-    .status.success {
-      background: rgba(61,214,140,.07);
-      border: 1px solid rgba(61,214,140,.2);
-    }
+    .status.error   { background: rgba(255,107,107,.08); border: 1px solid rgba(255,107,107,.25); color: var(--error); }
+    .status.success { background: rgba(61,214,140,.07);  border: 1px solid rgba(61,214,140,.2); }
 
     .download-btn {
-      display: inline-flex; align-items: center;
-      justify-content: center; gap: 8px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       margin-top: 14px; padding: 12px 20px;
       background: var(--success); color: #0a1f14;
       font-weight: 600; text-decoration: none;
@@ -199,6 +215,7 @@
       font-size: .85rem; flex: 1; min-width: 100px;
     }
     .stat-value { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+    .stat-value.foglia { color: var(--foglia); }
     .stat-label { color: var(--muted); font-size: .75rem; margin-top: 2px; }
   </style>
 </head>
@@ -206,29 +223,72 @@
 <main class="card">
   <span class="badge">PiP Studio</span>
   <h1>Buscador de Leads</h1>
-  <p class="subtitle">Busca negocios en Santa Fe por categoria y hasta 5 ciudades. Emails incluidos.</p>
+  <p class="subtitle">Prospeccion comercial para PyMEs industriales.</p>
 
-  <form id="scrape-form">
-    <div class="field">
-      <label for="category">Categoria</label>
-      <select id="category" required>
-        <option value="" disabled selected>Cargando...</option>
-      </select>
-    </div>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('generic', this)">Busqueda generica</button>
+    <button class="tab foglia" onclick="switchTab('foglia', this)">Foglia Valvulas</button>
+  </div>
 
-    <div class="field">
-      <label>Ciudades <span style="font-weight:400;text-transform:none;">(hasta 5)</span></label>
-      <div class="city-selector">
-        <input class="city-search" id="city-search" type="text" placeholder="Buscar ciudad..." autocomplete="off" />
-        <div class="city-list" id="city-list"></div>
+  <!-- ══ TAB GENERICO ══════════════════════════════════════════ -->
+  <div class="tab-panel active" id="panel-generic">
+    <form id="form-generic">
+      <div class="field">
+        <label for="category">Categoria</label>
+        <select id="category" required>
+          <option value="" disabled selected>Cargando...</option>
+        </select>
       </div>
-      <div class="city-tags" id="city-tags"></div>
-      <p class="city-limit" id="city-limit"></p>
+      <div class="field">
+        <label>Ciudades <span style="font-weight:400;text-transform:none;">(hasta 5, Santa Fe)</span></label>
+        <div class="city-selector">
+          <input class="city-search" id="city-search" type="text" placeholder="Buscar ciudad..." autocomplete="off" />
+          <div class="city-list" id="city-list"></div>
+        </div>
+        <div class="city-tags" id="city-tags"></div>
+        <p class="city-limit" id="city-limit"></p>
+      </div>
+      <button type="submit" class="primary" id="btn-generic" disabled>Generar Excel</button>
+    </form>
+  </div>
+
+  <!-- ══ TAB FOGLIA ════════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-foglia">
+    <div class="foglia-badge">
+      <span class="foglia-badge-icon">🔩</span>
+      <div class="foglia-badge-text">
+        <strong>Modo Foglia Valvulas</strong><br>
+        Busca revendedores calificados de valvula de diafragma para bebederos: agropecuarias, cooperativas, veterinarias rurales y ferreterias de campo.
+      </div>
     </div>
 
-    <button type="submit" id="submit-btn" disabled>Generar Excel</button>
-  </form>
+    <form id="form-foglia">
+      <div class="field">
+        <label for="foglia-province">Provincia</label>
+        <select id="foglia-province" required onchange="onFogliaProvinceChange()">
+          <option value="" disabled selected>Cargando...</option>
+        </select>
+      </div>
 
+      <!-- Toggle provincia entera vs ciudad -->
+      <div class="foglia-mode-toggle">
+        <button type="button" class="foglia-mode-btn active" id="btn-mode-province" onclick="setFogliaMode('province')">Toda la provincia</button>
+        <button type="button" class="foglia-mode-btn" id="btn-mode-city" onclick="setFogliaMode('city')">Una ciudad especifica</button>
+      </div>
+
+      <div class="field" id="foglia-city-field" style="display:none;">
+        <label for="foglia-city">Ciudad</label>
+        <select id="foglia-city">
+          <option value="" disabled selected>Selecciona provincia primero</option>
+        </select>
+      </div>
+
+      <button type="submit" class="primary foglia-btn" id="btn-foglia" disabled>Buscar Revendedores</button>
+    </form>
+  </div>
+
+  <!-- Progreso compartido -->
   <div class="progress-box" id="progress-box">
     <div class="progress-label" id="progress-label">Iniciando...</div>
     <div class="progress-track">
@@ -241,34 +301,48 @@
 </main>
 
 <script>
-  var MAX_CITIES    = 5;
-  var allCities     = [];
+  var MAX_CITIES     = 5;
+  var allCities      = [];
   var selectedCities = [];
-  var currentESS    = null;
+  var currentESS     = null;
+  var currentTab     = "generic";
+  var fogliaMode     = "province";
+  var fogliaProvinces = [];
 
-  var form         = document.getElementById("scrape-form");
+  // ── Elements ──────────────────────────────────────────────
   var statusEl     = document.getElementById("status");
-  var submitBtn    = document.getElementById("submit-btn");
+  var progressBox  = document.getElementById("progress-box");
+  var progressFill = document.getElementById("progress-fill");
+  var progressLbl  = document.getElementById("progress-label");
+  var progressPct  = document.getElementById("progress-pct");
   var catSelect    = document.getElementById("category");
   var cityList     = document.getElementById("city-list");
   var cityTags     = document.getElementById("city-tags");
   var citySearch   = document.getElementById("city-search");
   var cityLimit    = document.getElementById("city-limit");
-  var progressBox  = document.getElementById("progress-box");
-  var progressFill = document.getElementById("progress-fill");
-  var progressLbl  = document.getElementById("progress-label");
-  var progressPct  = document.getElementById("progress-pct");
+  var btnGeneric   = document.getElementById("btn-generic");
+  var btnFoglia    = document.getElementById("btn-foglia");
+  var fogliaProvSel = document.getElementById("foglia-province");
+  var fogliaCitySel = document.getElementById("foglia-city");
 
+  // ── Tabs ──────────────────────────────────────────────────
+  function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
+    document.querySelectorAll(".tab-panel").forEach(function(p) { p.classList.remove("active"); });
+    el.classList.add("active");
+    document.getElementById("panel-" + tab).classList.add("active");
+    hideStatus(); hideProgress();
+  }
+
+  // ── Status / Progreso ─────────────────────────────────────
   function showStatus(type, html) {
     statusEl.className = "status visible " + type;
     statusEl.innerHTML = html;
   }
-  function hideStatus() {
-    statusEl.className = "status";
-    statusEl.innerHTML = "";
-  }
+  function hideStatus() { statusEl.className = "status"; statusEl.innerHTML = ""; }
 
-  function showProgress(msg, pct) {
+  function showProgress(msg, pct, isFoglia) {
     progressBox.classList.add("visible");
     progressLbl.textContent = msg;
     if (pct === null) {
@@ -280,28 +354,38 @@
       progressFill.style.width = pct + "%";
       progressPct.textContent  = pct + "%";
     }
+    if (isFoglia) progressFill.classList.add("foglia");
+    else progressFill.classList.remove("foglia");
   }
   function hideProgress() {
     progressBox.classList.remove("visible");
     progressFill.classList.remove("indeterminate");
+    progressFill.classList.remove("foglia");
     progressFill.style.width = "0%";
     progressPct.textContent  = "";
     progressLbl.textContent  = "";
   }
 
+  // ── Config ────────────────────────────────────────────────
   function loadConfig() {
     fetch("/api/config")
-      .then(function(res) {
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        return res.json();
-      })
+      .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function(cfg) {
         catSelect.innerHTML = cfg.categories
           .map(function(c) { return "<option value='" + c.id + "'>" + c.id + ". " + c.label + "</option>"; })
           .join("");
         allCities = cfg.cities;
         renderCityList(allCities);
-        submitBtn.disabled = false;
+        btnGeneric.disabled = false;
+
+        // Foglia provinces
+        fogliaProvinces = cfg.foglia.provinces;
+        fogliaProvSel.innerHTML = fogliaProvinces
+          .map(function(p) { return "<option value='" + p.id + "'>" + p.name + "</option>"; })
+          .join("");
+        fogliaProvSel.value = "";
+        fogliaProvSel.innerHTML = "<option value='' disabled selected>Selecciona provincia</option>" + fogliaProvSel.innerHTML;
+        btnFoglia.disabled = false;
       })
       .catch(function() {
         catSelect.innerHTML = "<option value=''>Error al cargar</option>";
@@ -309,6 +393,24 @@
       });
   }
 
+  // ── Foglia province/city ──────────────────────────────────
+  function onFogliaProvinceChange() {
+    var pid = parseInt(fogliaProvSel.value);
+    var prov = fogliaProvinces.find(function(p) { return p.id === pid; });
+    if (!prov) return;
+    fogliaCitySel.innerHTML = prov.cities
+      .map(function(c) { return "<option value='" + c.id + "'>" + c.name + "</option>"; })
+      .join("");
+  }
+
+  function setFogliaMode(mode) {
+    fogliaMode = mode;
+    document.getElementById("btn-mode-province").classList.toggle("active", mode === "province");
+    document.getElementById("btn-mode-city").classList.toggle("active",    mode === "city");
+    document.getElementById("foglia-city-field").style.display = mode === "city" ? "block" : "none";
+  }
+
+  // ── Ciudad multi-select ───────────────────────────────────
   function renderCityList(cities) {
     cityList.innerHTML = cities.map(function(c) {
       var sel = selectedCities.some(function(s) { return s.id === c.id; });
@@ -317,8 +419,7 @@
         c.name + "</label>";
     }).join("");
 
-    var items = cityList.querySelectorAll(".city-item");
-    items.forEach(function(item) {
+    cityList.querySelectorAll(".city-item").forEach(function(item) {
       item.addEventListener("click", function(e) {
         if (e.target.tagName === "INPUT") return;
         var cb = item.querySelector("input");
@@ -341,9 +442,8 @@
         return;
       }
       var city = allCities.find(function(c) { return c.id === id; });
-      if (city && !selectedCities.some(function(s) { return s.id === id; })) {
+      if (city && !selectedCities.some(function(s) { return s.id === id; }))
         selectedCities.push(city);
-      }
     } else {
       selectedCities = selectedCities.filter(function(c) { return c.id !== id; });
     }
@@ -353,10 +453,7 @@
   function removeCity(id) {
     selectedCities = selectedCities.filter(function(c) { return c.id !== id; });
     var cb = cityList.querySelector("[data-id='" + id + "'] input");
-    if (cb) {
-      cb.checked = false;
-      cb.closest(".city-item").classList.remove("selected");
-    }
+    if (cb) { cb.checked = false; cb.closest(".city-item").classList.remove("selected"); }
     updateCityUI();
   }
 
@@ -365,21 +462,12 @@
       return "<span class='city-tag'>" + c.name +
         "<span class='remove' onclick='removeCity(" + c.id + ")'>x</span></span>";
     }).join("");
-
     var n = selectedCities.length;
-    if (n === 0) {
-      cityLimit.textContent = "";
-      cityLimit.className   = "city-limit";
-    } else if (n >= MAX_CITIES) {
-      cityLimit.textContent = "Limite alcanzado (" + n + "/" + MAX_CITIES + ").";
-      cityLimit.className   = "city-limit warn";
-    } else {
-      cityLimit.textContent = n + " ciudad" + (n > 1 ? "es" : "") + " seleccionada" + (n > 1 ? "s" : "") + ".";
-      cityLimit.className   = "city-limit";
-    }
-
-    var items = cityList.querySelectorAll(".city-item");
-    items.forEach(function(item) {
+    cityLimit.textContent = n === 0 ? "" :
+      n >= MAX_CITIES ? "Limite alcanzado (" + n + "/" + MAX_CITIES + ")." :
+      n + " ciudad" + (n > 1 ? "es" : "") + " seleccionada" + (n > 1 ? "s" : "") + ".";
+    cityLimit.className = n >= MAX_CITIES ? "city-limit warn" : "city-limit";
+    cityList.querySelectorAll(".city-item").forEach(function(item) {
       var id = parseInt(item.dataset.id);
       item.classList.toggle("selected", selectedCities.some(function(c) { return c.id === id; }));
     });
@@ -387,86 +475,120 @@
 
   citySearch.addEventListener("input", function() {
     var q = citySearch.value.toLowerCase().trim();
-    var filtered = q
-      ? allCities.filter(function(c) { return c.name.toLowerCase().indexOf(q) !== -1; })
-      : allCities;
-    renderCityList(filtered);
+    renderCityList(q ? allCities.filter(function(c) { return c.name.toLowerCase().indexOf(q) !== -1; }) : allCities);
   });
 
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
+  // ── SSE helper ────────────────────────────────────────────
+  function startSSE(job_id, isFoglia) {
+    if (currentESS) { currentESS.close(); currentESS = null; }
+    currentESS = new EventSource("/api/scrape/progress/" + job_id);
 
+    currentESS.onmessage = function(e) {
+      var ev = JSON.parse(e.data);
+      if (ev.type === "ping") return;
+
+      if (ev.type === "progress") {
+        showProgress(ev.message, ev.pct, isFoglia);
+        return;
+      }
+
+      if (ev.type === "done") {
+        currentESS.close(); currentESS = null;
+        hideProgress();
+        btnGeneric.disabled = false;
+        btnFoglia.disabled  = false;
+
+        var valColor = isFoglia ? "foglia" : "";
+        showStatus("success",
+          "<div class='stat-row'>" +
+          "<div class='stat'><div class='stat-value " + valColor + "'>" + ev.count + "</div><div class='stat-label'>negocios encontrados</div></div>" +
+          "<div class='stat'><div class='stat-value " + valColor + "'>" + ev.emails_found + "</div><div class='stat-label'>con email</div></div>" +
+          "</div>" +
+          "<a class='download-btn' href='" + ev.download_url + "' download='" + ev.filename + "'>Descargar " + ev.filename + "</a>"
+        );
+        return;
+      }
+
+      if (ev.type === "error") {
+        currentESS.close(); currentESS = null;
+        hideProgress();
+        btnGeneric.disabled = false;
+        btnFoglia.disabled  = false;
+        showStatus("error", ev.message || "Error inesperado.");
+      }
+    };
+
+    currentESS.onerror = function() {
+      currentESS.close(); currentESS = null;
+      hideProgress();
+      btnGeneric.disabled = false;
+      btnFoglia.disabled  = false;
+      showStatus("error", "Se perdio la conexion con el servidor.");
+    };
+  }
+
+  // ── Form generico ─────────────────────────────────────────
+  document.getElementById("form-generic").addEventListener("submit", function(e) {
+    e.preventDefault();
     var category_id = parseInt(catSelect.value, 10);
     if (!category_id)           { showStatus("error", "Selecciona una categoria."); return; }
     if (!selectedCities.length) { showStatus("error", "Selecciona al menos una ciudad."); return; }
 
-    submitBtn.disabled = true;
+    btnGeneric.disabled = true;
     hideStatus();
-    showProgress("Iniciando busqueda...", null);
-
-    if (currentESS) { currentESS.close(); currentESS = null; }
+    showProgress("Iniciando busqueda...", null, false);
 
     fetch("/api/scrape/start", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        category_id: category_id,
-        city_ids: selectedCities.map(function(c) { return c.id; }),
-      }),
+      body: JSON.stringify({ category_id: category_id, city_ids: selectedCities.map(function(c) { return c.id; }) }),
     })
-    .then(function(res) { return res.json(); })
-    .then(function(startData) {
-      if (startData.error) throw new Error(startData.error);
-
-      var job_id = startData.job_id;
-      currentESS = new EventSource("/api/scrape/progress/" + job_id);
-
-      currentESS.onmessage = function(e) {
-        var ev = JSON.parse(e.data);
-
-        if (ev.type === "ping") return;
-
-        if (ev.type === "progress") {
-          showProgress(ev.message, ev.pct);
-          return;
-        }
-
-        if (ev.type === "done") {
-          currentESS.close();
-          currentESS = null;
-          hideProgress();
-          submitBtn.disabled = false;
-
-          showStatus("success",
-            "<div class='stat-row'>" +
-            "<div class='stat'><div class='stat-value'>" + ev.count + "</div><div class='stat-label'>negocios encontrados</div></div>" +
-            "<div class='stat'><div class='stat-value'>" + ev.emails_found + "</div><div class='stat-label'>con email</div></div>" +
-            "</div>" +
-            "<a class='download-btn' href='" + ev.download_url + "' download='" + ev.filename + "'>Descargar " + ev.filename + "</a>"
-          );
-          return;
-        }
-
-        if (ev.type === "error") {
-          currentESS.close();
-          currentESS = null;
-          hideProgress();
-          submitBtn.disabled = false;
-          showStatus("error", ev.message || "Error inesperado.");
-        }
-      };
-
-      currentESS.onerror = function() {
-        currentESS.close();
-        currentESS = null;
-        hideProgress();
-        submitBtn.disabled = false;
-        showStatus("error", "Se perdio la conexion con el servidor.");
-      };
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) throw new Error(d.error);
+      startSSE(d.job_id, false);
     })
     .catch(function(err) {
-      hideProgress();
-      submitBtn.disabled = false;
+      hideProgress(); btnGeneric.disabled = false;
+      showStatus("error", err.message || "Error inesperado.");
+    });
+  });
+
+  // ── Form Foglia ───────────────────────────────────────────
+  document.getElementById("form-foglia").addEventListener("submit", function(e) {
+    e.preventDefault();
+    var province_id = parseInt(fogliaProvSel.value, 10);
+    if (!province_id) { showStatus("error", "Selecciona una provincia."); return; }
+
+    var payload = { mode: fogliaMode, province_id: province_id };
+
+    if (fogliaMode === "city") {
+      var city_id = parseInt(fogliaCitySel.value, 10);
+      if (!city_id) { showStatus("error", "Selecciona una ciudad."); return; }
+      payload.city_id = city_id;
+    }
+
+    btnFoglia.disabled = true;
+    hideStatus();
+
+    var provName = fogliaProvinces.find(function(p) { return p.id === province_id; });
+    var msg = fogliaMode === "province"
+      ? "Prospectando toda " + (provName ? provName.name : "la provincia") + "..."
+      : "Iniciando busqueda...";
+    showProgress(msg, null, true);
+
+    fetch("/api/foglia/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) throw new Error(d.error);
+      startSSE(d.job_id, true);
+    })
+    .catch(function(err) {
+      hideProgress(); btnFoglia.disabled = false;
       showStatus("error", err.message || "Error inesperado.");
     });
   });
